@@ -1,877 +1,449 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thánh Lê - Frontend Developer Intern | Ultra Portfolio</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --neon-cyan: #00ffff;
-            --neon-pink: #ff006e;
-            --neon-purple: #8b00ff;
-            --dark-bg: #0a0a0a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--dark-bg);
-            color: white;
-            overflow-x: hidden;
-            cursor: none;
-        }
-
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--neon-cyan);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transition: all 0.1s ease;
-            mix-blend-mode: difference;
-        }
-
-        .cursor-follower {
-            width: 8px;
-            height: 8px;
-            background: var(--neon-pink);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transition: all 0.15s ease;
-            box-shadow: 0 0 20px var(--neon-pink);
-        }
-
-        /* Animated Background */
-        #canvas-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        /* Glass Navigation */
-        nav {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 15px 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .nav-links a::before {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
-            transition: width 0.3s;
-        }
-
-        .nav-links a:hover::before {
-            width: 100%;
-        }
-
-        .nav-links a:hover {
-            color: var(--neon-cyan);
-            text-shadow: 0 0 10px var(--neon-cyan);
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-content {
-            text-align: center;
-            z-index: 1;
-            max-width: 1200px;
-            padding: 0 20px;
-        }
-
-        .glitch-text {
-            font-size: clamp(40px, 8vw, 120px);
-            font-weight: 900;
-            text-transform: uppercase;
-            position: relative;
-            display: inline-block;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% 200%;
-            animation: gradientShift 3s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .glitch-text::before,
-        .glitch-text::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .glitch-text::before {
-            animation: glitch1 2.5s infinite;
-            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
-            background: linear-gradient(45deg, var(--neon-cyan), transparent);
-            -webkit-background-clip: text;
-        }
-
-        .glitch-text::after {
-            animation: glitch2 2.5s infinite;
-            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
-            background: linear-gradient(45deg, transparent, var(--neon-pink));
-            -webkit-background-clip: text;
-        }
-
-        @keyframes glitch1 {
-            0%, 100% { transform: translate(0); }
-            33% { transform: translate(-2px, 2px); }
-            66% { transform: translate(2px, -2px); }
-        }
-
-        @keyframes glitch2 {
-            0%, 100% { transform: translate(0); }
-            33% { transform: translate(2px, -2px); }
-            66% { transform: translate(-2px, 2px); }
-        }
-
-        .subtitle {
-            font-size: clamp(18px, 3vw, 32px);
-            font-weight: 300;
-            letter-spacing: 4px;
-            margin-bottom: 30px;
-            opacity: 0.8;
-            text-transform: uppercase;
-        }
-
-        .typing-text {
-            font-size: clamp(14px, 2vw, 18px);
-            max-width: 800px;
-            margin: 0 auto 50px;
-            line-height: 1.8;
-            opacity: 0.7;
-        }
-
-        /* Holographic Buttons */
-        .holo-btn {
-            position: relative;
-            padding: 18px 50px;
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border: none;
-            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
-            color: white;
-            cursor: none;
-            overflow: hidden;
-            border-radius: 50px;
-            text-decoration: none;
-            display: inline-block;
-            margin: 10px;
-            transition: all 0.3s;
-        }
-
-        .holo-btn::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
-            background-size: 400%;
-            border-radius: 50px;
-            z-index: -1;
-            animation: gradientRotate 3s linear infinite;
-            filter: blur(8px);
-        }
-
-        @keyframes gradientRotate {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 400% 50%; }
-        }
-
-        .holo-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.5);
-        }
-
-        /* Contact Chips */
-        .contact-chips {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .chip {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .chip:hover {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* 3D Card Container */
-        .cards-container {
-            padding: 100px 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: clamp(32px, 6vw, 72px);
-            font-weight: 900;
-            margin-bottom: 80px;
-            background: linear-gradient(45deg, white, var(--neon-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-        }
-
-        /* 3D Tilt Card */
-        .tilt-card {
-            position: relative;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 40px;
-            overflow: hidden;
-            transition: all 0.3s;
-            transform-style: preserve-3d;
-        }
-
-        .tilt-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                        rgba(0, 255, 255, 0.15), 
-                        transparent 50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .tilt-card:hover::before {
-            opacity: 1;
-        }
-
-        .tilt-card:hover {
-            border-color: rgba(0, 255, 255, 0.3);
-            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.2);
-        }
-
-        .card-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            display: block;
-            filter: drop-shadow(0 0 10px var(--neon-cyan));
-        }
-
-        .card-title {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            background: linear-gradient(90deg, white, var(--neon-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .card-tech {
-            font-size: 12px;
-            opacity: 0.6;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
-
-        .card-features {
-            list-style: none;
-            margin: 20px 0;
-        }
-
-        .card-features li {
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 14px;
-            opacity: 0.8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-features li::before {
-            content: '▸';
-            color: var(--neon-cyan);
-            font-weight: bold;
-        }
-
-        .card-result {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 255, 255, 0.05);
-            border-left: 3px solid var(--neon-cyan);
-            border-radius: 5px;
-            font-size: 13px;
-        }
-
-        /* Neon Skills Grid */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-top: 60px;
-        }
-
-        .skill-box {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .skill-box::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-                transparent, 
-                var(--neon-cyan), 
-                transparent 30%
-            );
-            animation: rotate 4s linear infinite;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .skill-box:hover::after {
-            opacity: 0.3;
-        }
-
-        @keyframes rotate {
-            100% { transform: rotate(360deg); }
-        }
-
-        .skill-box > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .skill-box h3 {
-            font-size: 18px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--neon-cyan);
-        }
-
-        .skill-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .skill-tag {
-            background: linear-gradient(135deg, rgba(0,255,255,0.1), rgba(255,0,110,0.1));
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .skill-tag:hover {
-            background: var(--neon-cyan);
-            color: black;
-            transform: translateY(-2px);
-        }
-
-        /* Floating Interests */
-        .interests-container {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            margin-top: 60px;
-        }
-
-        .interest-orb {
-            width: 180px;
-            height: 180px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(0, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .interest-orb::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, var(--neon-pink) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .interest-orb:hover {
-            transform: translateY(-20px) scale(1.1);
-            border-color: var(--neon-cyan);
-            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.4);
-        }
-
-        .interest-orb:hover::before {
-            opacity: 0.1;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .interest-orb > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .interest-icon {
-            font-size: 48px;
-        }
-
-        .interest-name {
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        /* Futuristic Footer */
-        footer {
-            background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.8));
-            padding: 80px 20px 40px;
-            position: relative;
-            z-index: 1;
-            text-align: center;
-        }
-
-        .footer-glow {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
-            box-shadow: 0 0 20px var(--neon-cyan);
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .social-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            transition: all 0.3s;
-            color: white;
-            text-decoration: none;
-        }
-
-        .social-icon:hover {
-            background: var(--neon-cyan);
-            color: black;
-            transform: translateY(-5px) rotate(360deg);
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.5);
-        }
-
-        /* Scroll Indicator */
-        .scroll-indicator {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
-            z-index: 9999;
-            transition: width 0.1s;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                gap: 20px;
-            }
-            
-            .nav-links a {
-                font-size: 12px;
-            }
-
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .interest-orb {
-                width: 150px;
-                height: 150px;
-            }
-        }
-
-        /* Hide default cursor on desktop */
-        @media (hover: hover) {
-            a, button {
-                cursor: none !important;
-            }
-        }
-    </style>
+    <title>Thành Lê - Frontend Developer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-
-    <!-- Scroll Progress -->
-    <div class="scroll-indicator"></div>
-
-    <!-- Animated Background -->
-    <canvas id="canvas-bg"></canvas>
-
     <!-- Navigation -->
-    <nav>
-        <ul class="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#interests">Interests</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="nav-logo">TL</div>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#projects">Projects</a>
+                <a href="#skills">Skills</a>
+                <a href="#contact" class="nav-cta">Let's Talk</a>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero">
+    <section class="hero">
+        <div class="hero-background">
+            <div class="grid-overlay"></div>
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+        
         <div class="hero-content">
-            <h1 class="glitch-text" data-text="THÁNH LÊ">THÁNH LÊ</h1>
-            <p class="subtitle">Frontend Developer Intern</p>
-            <p class="typing-text">
-                Information Technology student majoring in Software Engineering at NIIE, 
-                passionate about creating next-generation web experiences. 
-                Seeking opportunities to build the future of the web.
+            <div class="hero-badge">👋 Available for Internship</div>
+            <h1 class="hero-title">
+                Hi, I'm <span class="gradient-text">Thành Lê</span>
+            </h1>
+            <p class="hero-subtitle">Frontend Developer & Web Enthusiast</p>
+            <p class="hero-description">
+                Information Technology student at NIIE specializing in Software Engineering. 
+                I craft beautiful, functional web experiences that users love. Currently seeking 
+                opportunities to build innovative solutions and grow as a developer.
             </p>
             
-            <div>
-                <a href="#projects" class="holo-btn">Explore Work</a>
-                <a href="#contact" class="holo-btn">Get In Touch</a>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">2+</div>
+                    <div class="stat-label">Projects</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label">Technologies</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
             </div>
 
-            <div class="contact-chips">
-                <div class="chip">📱 0794911532</div>
-                <div class="chip">✉️ thanhhihi765@gmail.com</div>
-                <div class="chip">📍 119/7 Nguyễn Thị Thập</div>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+            </div>
+
+            <div class="hero-scroll">
+                <span>Scroll to explore</span>
+                <div class="scroll-indicator"></div>
             </div>
         </div>
     </section>
 
-    <!-- Projects -->
-    <section id="projects" class="cards-container">
-        <h2 class="section-title">Featured Projects</h2>
-        
-        <div class="cards-grid">
-            <div class="tilt-card">
-                <span class="card-icon">🛒</span>
-                <h3 class="card-title">ShopPhone E-Commerce</h3>
-                <p class="card-tech">HTML • CSS • JavaScript • ASP.NET Core MVC • SQL Server</p>
-                
-                <ul class="card-features">
-                    <li>Dynamic product catalog with filtering</li>
-                    <li>Real-time form validation</li>
-                    <li>Responsive grid layouts</li>
-                    <li>Database-driven content management</li>
-                    <li>CRUD operations & data persistence</li>
-                    <li>Git workflow & version control</li>
-                </ul>
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Get to know me</span>
+                <h2 class="section-title">About Me</h2>
+            </div>
 
-                <div class="card-result">
-                    <strong>Result:</strong> Fully functional e-commerce platform with 98% uptime and seamless UX
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="card-icon">💼</div>
+                    <h3>Professional Focus</h3>
+                    <p>Passionate about creating seamless user experiences through clean, efficient code. I believe great design and functionality go hand-in-hand.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="card-icon">🎯</div>
+                    <h3>Current Goal</h3>
+                    <p>Seeking a frontend developer internship where I can contribute to real-world projects while learning from experienced developers.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="card-icon">🚀</div>
+                    <h3>What I Bring</h3>
+                    <p>Strong foundation in modern web technologies, cloud deployment experience, and a hunger to learn and adapt to new challenges.</p>
                 </div>
             </div>
 
-            <div class="tilt-card">
-                <span class="card-icon">🐳</span>
-                <h3 class="card-title">Cloud Deployment Pipeline</h3>
-                <p class="card-tech">Docker • AWS EC2 • Nginx • Ubuntu • Docker Hub</p>
-                
-                <ul class="card-features">
-                    <li>Containerized static websites</li>
-                    <li>Image registry management</li>
-                    <li>AWS infrastructure provisioning</li>
-                    <li>Security group configuration</li>
-                    <li>SSH remote administration</li>
-                    <li>Automated deployment workflow</li>
-                </ul>
-
-                <div class="card-result">
-                    <strong>Result:</strong> Production environment with 99% uptime, accessible globally via AWS
+            <div class="contact-bar">
+                <div class="contact-item">
+                    <span class="contact-icon">📱</span>
+                    <div>
+                        <div class="contact-label">Phone</div>
+                        <div class="contact-value">0794911532</div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Skills -->
-    <section id="skills" class="cards-container">
-        <h2 class="section-title">Tech Arsenal</h2>
-        
-        <div class="skills-grid">
-            <div class="skill-box">
-                <h3>💻 Frontend</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">HTML5</span>
-                    <span class="skill-tag">CSS3</span>
-                    <span class="skill-tag">JavaScript</span>
-                    <span class="skill-tag">Responsive Design</span>
+                <div class="contact-item">
+                    <span class="contact-icon">✉️</span>
+                    <div>
+                        <div class="contact-label">Email</div>
+                        <div class="contact-value">thanhhihi765@gmail.com</div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="skill-box">
-                <h3>⚙️ Backend</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">C#</span>
-                    <span class="skill-tag">ASP.NET Core</span>
-                    <span class="skill-tag">MVC</span>
-                    <span class="skill-tag">RESTful API</span>
-                </div>
-            </div>
-
-            <div class="skill-box">
-                <h3>🗄️ Database</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">SQL Server</span>
-                    <span class="skill-tag">CRUD</span>
-                    <span class="skill-tag">DB Design</span>
-                </div>
-            </div>
-
-            <div class="skill-box">
-                <h3>🛠️ DevOps</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">Docker</span>
-                    <span class="skill-tag">AWS EC2</span>
-                    <span class="skill-tag">Git/GitHub</span>
-                    <span class="skill-tag">Linux</span>
-                </div>
-            </div>
-
-            <div class="skill-box">
-                <h3>🎨 Tools</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">Visual Studio</span>
-                    <span class="skill-tag">VS Code</span>
-                    <span class="skill-tag">Nginx</span>
-                </div>
-            </div>
-
-            <div class="skill-box">
-                <h3>🌐 Languages</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">Vietnamese</span>
-                    <span class="skill-tag">English</span>
+                <div class="contact-item">
+                    <span class="contact-icon">📍</span>
+                    <div>
+                        <div class="contact-label">Location</div>
+                        <div class="contact-value">119/7 Nguyễn Thị Thập, HCMC</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Interests -->
-    <section id="interests" class="cards-container">
-        <h2 class="section-title">Beyond Code</h2>
-        
-        <div class="interests-container">
-            <div class="interest-orb">
-                <span class="interest-icon">♟️</span>
-                <span class="interest-name">Chess</span>
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">What I've built</span>
+                <h2 class="section-title">Featured Projects</h2>
             </div>
 
-            <div class="interest-orb">
-                <span class="interest-icon">🎯</span>
-                <span class="interest-name">Chinese Chess</span>
+            <div class="projects-grid">
+                <!-- Project 1 -->
+                <article class="project-card">
+                    <div class="project-number">01</div>
+                    <div class="project-image">
+                        <div class="project-placeholder">
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="200" height="200" fill="url(#grad1)"/>
+                                <defs>
+                                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#14B8A6;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#0D9488;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="white" font-size="60" font-weight="bold">🛒</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">ShopPhone E-Commerce Platform</h3>
+                        <p class="project-description">
+                            A full-featured e-commerce platform for mobile phones with dynamic product catalog, 
+                            real-time validation, and responsive design. Built with ASP.NET Core MVC and SQL Server 
+                            for robust backend operations.
+                        </p>
+                        
+                        <div class="project-features">
+                            <div class="feature">✓ Dynamic product filtering & search</div>
+                            <div class="feature">✓ Real-time form validation</div>
+                            <div class="feature">✓ Responsive grid layouts</div>
+                            <div class="feature">✓ Full CRUD operations</div>
+                            <div class="feature">✓ Database-driven CMS</div>
+                        </div>
+
+                        <div class="project-tech">
+                            <span class="tech-tag">HTML</span>
+                            <span class="tech-tag">CSS</span>
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">ASP.NET Core</span>
+                            <span class="tech-tag">SQL Server</span>
+                            <span class="tech-tag">MVC</span>
+                        </div>
+
+                        <div class="project-result">
+                            <strong>🎯 Result:</strong> Achieved 98% uptime with seamless user experience and positive feedback from test users
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project 2 -->
+                <article class="project-card">
+                    <div class="project-number">02</div>
+                    <div class="project-image">
+                        <div class="project-placeholder">
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="200" height="200" fill="url(#grad2)"/>
+                                <defs>
+                                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="white" font-size="60" font-weight="bold">☁️</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Cloud Deployment Pipeline</h3>
+                        <p class="project-description">
+                            Automated deployment workflow using Docker containerization and AWS infrastructure. 
+                            Implemented complete CI/CD pipeline with Nginx reverse proxy for production-grade 
+                            web hosting accessible globally.
+                        </p>
+                        
+                        <div class="project-features">
+                            <div class="feature">✓ Docker containerization</div>
+                            <div class="feature">✓ AWS EC2 provisioning</div>
+                            <div class="feature">✓ Nginx configuration</div>
+                            <div class="feature">✓ Security group setup</div>
+                            <div class="feature">✓ Automated deployment</div>
+                        </div>
+
+                        <div class="project-tech">
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">AWS EC2</span>
+                            <span class="tech-tag">Nginx</span>
+                            <span class="tech-tag">Ubuntu</span>
+                            <span class="tech-tag">Docker Hub</span>
+                            <span class="tech-tag">SSH</span>
+                        </div>
+
+                        <div class="project-result">
+                            <strong>🎯 Result:</strong> Deployed production environment with 99% uptime, globally accessible via AWS infrastructure
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">My expertise</span>
+                <h2 class="section-title">Technical Skills</h2>
             </div>
 
-            <div class="interest-orb">
-                <span class="interest-icon">🏃</span>
-                <span class="interest-name">Jogging</span>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <div class="category-header">
+                        <div class="category-icon">💻</div>
+                        <h3>Frontend Development</h3>
+                    </div>
+                    <div class="skill-items">
+                        <div class="skill-item">
+                            <span>HTML5</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>CSS3</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>JavaScript</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>Responsive Design</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 88%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <div class="category-header">
+                        <div class="category-icon">⚙️</div>
+                        <h3>Backend Development</h3>
+                    </div>
+                    <div class="skill-items">
+                        <div class="skill-item">
+                            <span>C#</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 75%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>ASP.NET Core</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 78%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>MVC Pattern</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>RESTful API</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 72%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <div class="category-header">
+                        <div class="category-icon">🗄️</div>
+                        <h3>Database & DevOps</h3>
+                    </div>
+                    <div class="skill-items">
+                        <div class="skill-item">
+                            <span>SQL Server</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 82%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>Docker</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 75%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>AWS EC2</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 70%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span>Git/GitHub</span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <div class="category-header">
+                        <div class="category-icon">🛠️</div>
+                        <h3>Tools & Others</h3>
+                    </div>
+                    <div class="tools-grid">
+                        <div class="tool-badge">Visual Studio</div>
+                        <div class="tool-badge">VS Code</div>
+                        <div class="tool-badge">Nginx</div>
+                        <div class="tool-badge">Linux</div>
+                        <div class="tool-badge">Vietnamese</div>
+                        <div class="tool-badge">English</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interests Section -->
+    <section class="interests">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Beyond coding</span>
+                <h2 class="section-title">Interests & Hobbies</h2>
+            </div>
+
+            <div class="interests-grid">
+                <div class="interest-card">
+                    <div class="interest-icon">♟️</div>
+                    <h3>Chess</h3>
+                    <p>Strategic thinking and problem-solving through classical chess</p>
+                </div>
+                <div class="interest-card">
+                    <div class="interest-icon">🎯</div>
+                    <h3>Chinese Chess</h3>
+                    <p>Exploring traditional strategy games and tactical planning</p>
+                </div>
+                <div class="interest-card">
+                    <div class="interest-icon">🏃</div>
+                    <h3>Jogging</h3>
+                    <p>Staying active and maintaining a healthy work-life balance</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-left">
+                    <span class="section-label">Let's work together</span>
+                    <h2 class="section-title">Get In Touch</h2>
+                    <p class="contact-text">
+                        I'm currently looking for internship opportunities where I can contribute 
+                        to exciting projects and grow as a developer. Whether you have a position 
+                        available or just want to connect, I'd love to hear from you!
+                    </p>
+                    
+                    <div class="contact-methods">
+                        <a href="mailto:thanhhihi765@gmail.com" class="contact-method">
+                            <span class="method-icon">✉️</span>
+                            <div>
+                                <div class="method-label">Email me at</div>
+                                <div class="method-value">thanhhihi765@gmail.com</div>
+                            </div>
+                        </a>
+                        <a href="tel:0794911532" class="contact-method">
+                            <span class="method-icon">📱</span>
+                            <div>
+                                <div class="method-label">Call me at</div>
+                                <div class="method-value">0794911532</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact-right">
+                    <div class="contact-box">
+                        <h3>Quick Message</h3>
+                        <p>Feel free to reach out directly via email or phone, or connect with me on professional networks.</p>
+                        
+                        <div class="availability">
+                            <div class="status-indicator"></div>
+                            <span>Available for opportunities</span>
+                        </div>
+
+                        <div class="response-time">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
+                                <path d="M10 5V10L13 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Usually responds within 24 hours</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-logo">TL</div>
+                    <p>© 2025 Thành Lê. Building the web, one project at a time.</p>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-links">
+                        <a href="#about">About</a>
+                        <a href="#projects">Projects</a>
+                        <a href="#skills">Skills</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-    <script>
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        const follower = document.querySelector('.cursor-follower');
-
-        let mouseX = 0, mouseY = 0;
-        let followerX = 0, followerY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            cursor.style.left = mouseX + 'px';
-            cursor.style.top = mouseY + 'px';
-        });
-
-        function animateFollower() {
-            const dx = mouseX - followerX;
-            const dy = mouseY - followerY;
-            followerX += dx * 0.1;
-            followerY += dy * 0.1;
-            follower.style.left = followerX + 'px';
-            follower.style.top = followerY + 'px';
-            requestAnimationFrame(animateFollower);
-        }
-        animateFollower();
-
-        // Scroll Progress
-        window.addEventListener('scroll', () => {
-            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-            document.querySelector('.scroll-indicator').style.width = scrolled + '%';
-        });
-
-        // Particle Background
-        const canvas = document.getElementById('canvas-bg');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particles = [];
-        const particleCount = 100;
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            }
-
-            draw() {
-                ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
+    <script src="script.js"></script>
+</body>
+</html>
